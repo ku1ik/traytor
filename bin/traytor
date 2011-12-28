@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+import sys
+import os
+import getopt
+import glob
+import pygtk
+pygtk.require('2.0')
+import gtk
+import gobject
+import gio
+
+class AnimatedStatusIcon(gtk.StatusIcon):
+    def __init__(self, path, tooltip='Traytor', interval=1000, command=None):
+        gtk.StatusIcon.__init__(self)
+        self.icons = self.icon_list(path)
+        self.currentIconN = 0
+        self.set_tooltip(tooltip)
+        self.animate()
+        self.set_visible(True)
+        if len(self.icons) > 1:
+            gobject.timeout_add(interval, self.animate)
+
+    def animate(self):
+        self.currentIconN = (self.currentIconN + 1) % len(self.icons)
+        self.set_from_file(self.icons[self.currentIconN])
+        return True
+
+    def icon_list(self, path):
+        if os.path.isdir(path):
+            icons = glob.glob("%s/*" % path)
+            icons.sort()
+            return icons
+        else:
+            return [path]
+
+
+def error(msg):
+    print('%s: %s' % (sys.argv[0], msg))
+    print('Run "%s --help" for list of available options' % sys.argv[0])
+    sys.exit(2)
+
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 't:c:i:h', ['help'])
+    except getopt.error as msg:
+        error(msg)
+
+    tooltip = None
+    interval = 1000
+    command = None
+
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            usage()
+            sys.exit(0)
+        elif opt == '-t':
+            tooltip = arg
+        elif opt == '-c':
+            command = arg
+        elif opt == '-i':
+            interval = int(arg)
+
+    if len(args) == 0:
+        error('icon filename (or icon dir) required')
+
+    trayIcon = AnimatedStatusIcon(args[0], tooltip=tooltip, interval=interval, command=command)
+    gtk.main()
+
+
+def usage():
+    text = '''usage: %s [-h] [-t <tooltip>] [-c <command>] [-i <interval>] <image file or directory with images>
+
+Traytor. Apostate. Deceiver. Judas.
+
+optional arguments:
+ -h, --help    show this help message and exit
+ -t tooltip    specify tooltip for tray icon
+ -i interval   animation frame duration (in milliseconds)
+ -c command    run specified command when tray icon clicked''' % sys.argv[0]
+
+    print text
+
+if __name__ == '__main__':
+    main()
