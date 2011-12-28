@@ -65,7 +65,8 @@ def main():
     if len(args) == 0:
         error('icon filename (or icon dir) required')
 
-    trayIcon = AnimatedStatusIcon(args[0], tooltip=tooltip, interval=interval, command=command)
+    path = os.path.expanduser(args[0])
+    trayIcon = AnimatedStatusIcon(path, tooltip=tooltip, interval=interval, command=command)
     gtk.main()
 
 
