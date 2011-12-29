@@ -77,7 +77,7 @@ optional arguments:
  -h, --help    show this help message and exit
  -t tooltip    specify tooltip for tray icon
  -i interval   animation frame duration (in milliseconds), default: 1000
- -c command    run specified command when tray icon clicked''' % sys.argv[0]
+ -c command    run specified command when tray icon clicked''' % os.path.basename(sys.argv[0])
 
     print text
 
