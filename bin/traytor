@@ -73,12 +73,10 @@ def main():
 def usage():
     text = '''usage: %s [-h] [-t <tooltip>] [-c <command>] [-i <interval>] <image file or directory with images>
 
-Traytor. Apostate. Deceiver. Judas.
-
 optional arguments:
  -h, --help    show this help message and exit
  -t tooltip    specify tooltip for tray icon
- -i interval   animation frame duration (in milliseconds)
+ -i interval   animation frame duration (in milliseconds), default: 1000
  -c command    run specified command when tray icon clicked''' % sys.argv[0]
 
     print text
