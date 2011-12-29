@@ -14,17 +14,26 @@ class AnimatedStatusIcon(gtk.StatusIcon):
     def __init__(self, path, tooltip='Traytor', interval=1000, command=None):
         gtk.StatusIcon.__init__(self)
         self.icons = self.icon_list(path)
+        self.command = command
         self.currentIconN = 0
         self.set_tooltip(tooltip)
         self.animate()
         self.set_visible(True)
+
         if len(self.icons) > 1:
             gobject.timeout_add(interval, self.animate)
+
+        if self.command:
+            self.connect("activate", self.run_command)
 
     def animate(self):
         self.currentIconN = (self.currentIconN + 1) % len(self.icons)
         self.set_from_file(self.icons[self.currentIconN])
         return True
+
+    def run_command(self, icon):
+        cmd = '/bin/bash -c "%s" &' % self.command.replace('"', '\\"')
+        os.system(cmd)
 
     def icon_list(self, path):
         if os.path.isdir(path):
